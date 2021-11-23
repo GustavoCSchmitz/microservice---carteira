@@ -1,0 +1,44 @@
+server:
+  port: 8081
+  
+spring:
+  application:
+    name: 'carteira'
+  datasource:
+    username: gustavo
+    password: 123456
+    url: jdbc:mysql://localhost:3306/carteira
+  jpa:
+    hibernate:
+      ddl-auto: create 
+  
+#Tentativa de efetuar o docker com o serviço da carteira      
+#spring:
+#  jpa:
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.dialect.MySQLDialect
+#    hibernate:
+#      ddl-auto: none
+#  datasource:
+#    hikari:
+#      connection-timeout: 20000
+#      pool-name: carteiraMysqlPool
+#      idle-timeout: 10000
+#      maximum-pool-size: 5
+#      connection-test-query: select now();
+#      minimum-idle: 1
+#    name: carteira
+#    password: password
+#    driver-class-name: com.mysql.jdbc.Driver
+#    username: root
+#    url: jdbc:mysql://db:3306/carteira
+#    type: com.zaxxer.hikari.HikariDataSource
+
+       
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
