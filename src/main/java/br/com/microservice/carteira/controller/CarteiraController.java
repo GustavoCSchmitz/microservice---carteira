@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.microservice.carteira.service.CarteiraService;
@@ -78,14 +77,4 @@ public class CarteiraController {
 		}
 	}
 	
-	@PostMapping("/pagamento")
-	public ResponseEntity<String> pagamento(@RequestBody String pagamento) throws IOException{
-		try {
-			carteiraService.pagamento(pagamento);
-			return new ResponseEntity<String>("ok",HttpStatus.OK);
-		}catch (Exception e) {
-			e.printStackTrace();
-			return new ResponseEntity<String>("Ocorreu um erro durante a realização do saque",HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
 }

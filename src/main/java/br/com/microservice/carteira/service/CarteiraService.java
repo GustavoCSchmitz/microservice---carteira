@@ -85,21 +85,16 @@ public class CarteiraService {
 		return gson.fromJson(saque, TransferenciaDTO.class);
 	}
 
-	public void pagamento(String pagamento) {
-		PagamentoDTO infos = montaJsonPagamento(pagamento);
-		if(nonNull(getInfosDaCarteira(infos.getCarteira().getTitular()))) {
-			Carteira carteira = getInfosDaCarteira(infos.getCarteira().getTitular());
-			carteira.setSaldo(carteira.getSaldo() - infos.getValor());
+	public void pagamento(PagamentoDTO pagamento) {
+		if(nonNull(getInfosDaCarteira(pagamento.getCarteira().getTitular()))) {
+			Carteira carteira = getInfosDaCarteira(pagamento.getCarteira().getTitular());
+			carteira.setSaldo(carteira.getSaldo() - pagamento.getValor());
 			salvar(carteira);
-			infos.setTipo(TipoMovimentacaoENUM.PAGAMENTO.getId());
-			movimentacaoFinanceiraService.registrarMovimentacao(infos, carteira);
+			pagamento.setTipo(TipoMovimentacaoENUM.PAGAMENTO.getId());
+			movimentacaoFinanceiraService.registrarMovimentacao(pagamento, carteira);
 		}		
 		
 	}
-	
-	private PagamentoDTO montaJsonPagamento(String pagamento) {
-		Gson gson = new Gson();
-		return gson.fromJson(pagamento, PagamentoDTO.class);
-	}
+
 
 }

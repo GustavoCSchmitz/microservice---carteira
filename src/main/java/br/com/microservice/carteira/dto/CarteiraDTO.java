@@ -1,6 +1,6 @@
 package br.com.microservice.carteira.dto;
 
-public class CarteiraDTO {
+public class CarteiraDTO  {
 
 	private String titular;
 	

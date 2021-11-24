@@ -11,6 +11,11 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create 
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: 123456
   
 #Tentativa de efetuar o docker com o serviço da carteira      
 #spring:

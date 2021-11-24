@@ -26,6 +26,10 @@ public class Carteira {
 		setTitular(new Usuario(idUsuario));
 		setSaldo(Double.parseDouble(usuarioDTO.getSaldoInicial()));
 	}
+	
+	public Carteira() {
+		
+	}
 
 	public Double getSaldo() {
 		return saldo;

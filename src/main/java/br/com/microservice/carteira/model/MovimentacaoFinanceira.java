@@ -2,6 +2,7 @@ package br.com.microservice.carteira.model;
 
 import java.time.LocalDateTime;
 
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,7 +12,6 @@ import javax.persistence.ManyToOne;
 
 import br.com.microservice.carteira.dto.InfoOperacaoBancariaDTO;
 import br.com.microservice.carteira.dto.PagamentoDTO;
-
 @Entity
 public class MovimentacaoFinanceira {
 
@@ -30,7 +30,7 @@ public class MovimentacaoFinanceira {
 	private LocalDateTime dataMovimentacao;
 	
 	//Construtor para movimentações de transferências
-	public MovimentacaoFinanceira(Carteira carteira,InfoOperacaoBancariaDTO infos) {
+	public MovimentacaoFinanceira(Carteira carteira,PagamentoDTO infos) {
 		setValor(infos.getValor());
 		setTipo(infos.getTipo());
 		setUsuario(new Usuario(carteira.getTitular().getId()));
@@ -50,7 +50,7 @@ public class MovimentacaoFinanceira {
 	}
 
 	//Construtor para pagamentos
-	public MovimentacaoFinanceira(Carteira carteira, PagamentoDTO infos) {
+	public MovimentacaoFinanceira(Carteira carteira, InfoOperacaoBancariaDTO infos) {
 		setValor(infos.getValor());
 		setTipo(infos.getTipo());
 		setUsuario(new Usuario(carteira.getTitular().getId()));

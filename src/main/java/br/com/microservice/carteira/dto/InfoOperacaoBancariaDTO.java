@@ -1,5 +1,6 @@
 package br.com.microservice.carteira.dto;
 
+
 public class InfoOperacaoBancariaDTO {
 
 	private CarteiraDTO carteira;	
