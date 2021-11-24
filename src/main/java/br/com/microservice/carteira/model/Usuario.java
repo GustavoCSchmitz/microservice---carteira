@@ -5,6 +5,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import br.com.microservice.carteira.dto.UsuarioDTO;
+
 @Entity
 public class Usuario {
 
@@ -19,6 +21,10 @@ public class Usuario {
 	}
 	
 	public Usuario() {
+	}
+
+	public Usuario(UsuarioDTO usuarioDTO) {
+		setNome(usuarioDTO.getNome());
 	}
 
 	public String getNome() {

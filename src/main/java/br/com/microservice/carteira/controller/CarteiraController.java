@@ -14,19 +14,31 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.microservice.carteira.service.CarteiraService;
 import br.com.microservice.carteira.service.MovimentacaoFinanceiraService;
+import br.com.microservice.carteira.service.UsuarioService;
 
 @RestController
 public class CarteiraController {
 
 	@Autowired private CarteiraService carteiraService;
 	@Autowired private MovimentacaoFinanceiraService movimentacaoFinanceiraService;
+	@Autowired private UsuarioService usuarioService;
 	
-	//utilizar UUID
 	@GetMapping(value="/movimentacoes/{idTitular}", produces="application/json")
 	public ResponseEntity<String> movimentacoesUsuario(@PathVariable Integer idTitular) throws IOException{
 		try {
 			String movimentacoes = movimentacaoFinanceiraService.getMovimentacoesUsuario(idTitular);
 			return new ResponseEntity<String>(movimentacoes,HttpStatus.OK);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<String>("Ocorreu um erro durante a realização do saque",HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@PostMapping("/cadastrarUsuario")
+	public ResponseEntity<String> cadastrarUsuario(@RequestBody String usuario) throws IOException{
+		try {
+			Integer idUsuario = usuarioService.cadastrar(usuario);
+			return new ResponseEntity<String>("Usuario e carteira cadastrados com sucesso. \nID do usuário criado: "+idUsuario.toString(),HttpStatus.OK);
 		}catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<String>("Ocorreu um erro durante a realização do saque",HttpStatus.INTERNAL_SERVER_ERROR);

@@ -35,7 +35,7 @@ public class CarteiraService {
 		}		
 	}
 
-	private void salvar(Carteira carteira) {
+	public void salvar(Carteira carteira) {
 		carteiraRepository.save(carteira);		
 	}
 

@@ -7,6 +7,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
+import br.com.microservice.carteira.dto.UsuarioDTO;
+
 @Entity
 public class Carteira {
 
@@ -19,6 +21,11 @@ public class Carteira {
 	private Usuario titular;
 	
 	private Double saldo;
+
+	public Carteira(UsuarioDTO usuarioDTO, Integer idUsuario) {
+		setTitular(new Usuario(idUsuario));
+		setSaldo(Double.parseDouble(usuarioDTO.getSaldoInicial()));
+	}
 
 	public Double getSaldo() {
 		return saldo;
