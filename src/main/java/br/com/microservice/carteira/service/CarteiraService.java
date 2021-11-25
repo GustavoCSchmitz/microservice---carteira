@@ -19,12 +19,8 @@ public class CarteiraService {
 	@Autowired private CarteiraRepository carteiraRepository;
 	@Autowired private MovimentacaoFinanceiraService movimentacaoFinanceiraService;
 	@Autowired private TransferenciaService transferenciaService;
-	
-	public Carteira getInfosDaCarteira(String nomeTitular) {
-		return carteiraRepository.findByTitularNome(nomeTitular);
-	}
-
-	public String saque(String saque) {
+		
+	public String saque (String saque) {
 		InfoOperacaoBancariaDTO infos = montaJson(saque);
 		if(nonNull(getInfosDaCarteira(infos.getCarteira().getTitular()))) {
 			Carteira carteira = getInfosDaCarteira(infos.getCarteira().getTitular());
@@ -35,25 +31,12 @@ public class CarteiraService {
 				movimentacaoFinanceiraService.registrarMovimentacao(infos, carteira);
 				return "Saque no valor de R$"+infos.getValor().toString()+" realizado com sucesso!";
 			}else
-				return "A conta não possui saldo suficiente para completar o saque!";
+				return "A carteira não possui saldo suficiente para completar o saque!";
 		}		
-		return "A conta informada não foi cadastrada!";
+		return "A carteira informada não foi cadastrada!";
 	}
-
-	private boolean verificaSeTemSaldo(Double saldoCarteira, Double valorSaque) {
-		return saldoCarteira- valorSaque >= 0;
-	}
-
-	public void salvar(Carteira carteira) {
-		carteiraRepository.save(carteira);		
-	}
-
-	private InfoOperacaoBancariaDTO montaJson(String saque) {
-		Gson gson = new Gson();
-		return gson.fromJson(saque, InfoOperacaoBancariaDTO.class);
-	}
-
-	public void deposito(String deposito) {
+	
+	public String deposito(String deposito) {
 		InfoOperacaoBancariaDTO infos = montaJson(deposito);
 		if(nonNull(getInfosDaCarteira(infos.getCarteira().getTitular()))) {
 			Carteira carteira = getInfosDaCarteira(infos.getCarteira().getTitular());
@@ -61,9 +44,11 @@ public class CarteiraService {
 			salvar(carteira);
 			infos.setTipo(TipoMovimentacaoENUM.DEPOSITO.getId());
 			movimentacaoFinanceiraService.registrarMovimentacao(infos, carteira);
-		}		
+			return "Depósito no valor de R$"+ infos.getValor() +" realizado com sucesso"; 
+		}
+		return "A carteira informada não foi cadastrada!";
 	}
-
+	
 	public String transferencia(String transferencia) {
 		TransferenciaDTO transferenciaDTO = montaJsonTransferencia(transferencia);		
 		if(nonNull(verificaSeCarteirasExistem(transferenciaDTO))) {
@@ -83,11 +68,39 @@ public class CarteiraService {
 				" para " + transferenciaDTO.getNomeTitularDestino() + " realizada com sucesso";
 			
 			}
-			return "A conta de origem não possui o valor desejado para a transferência";
+			return "A carteira de origem não possui o valor desejado para a transferência";
 		}
 		return "Uma das carteiras informadas não está cadastrada no banco de dados";
 	}
 	
+	public void pagamento(PagamentoDTO pagamento) {
+		if(nonNull(getInfosDaCarteira(pagamento.getNomeTitularCarteira()))) {
+			Carteira carteira = getInfosDaCarteira(pagamento.getNomeTitularCarteira());
+			carteira.setSaldo(carteira.getSaldo() - pagamento.getValor());
+			salvar(carteira);
+			pagamento.setTipo(TipoMovimentacaoENUM.PAGAMENTO.getId());
+			movimentacaoFinanceiraService.registrarMovimentacao(pagamento, carteira);
+		}		
+		
+	}
+
+	private boolean verificaSeTemSaldo(Double saldoCarteira, Double valorSaque) {
+		return saldoCarteira- valorSaque >= 0;
+	}
+
+	public Carteira getInfosDaCarteira(String nomeTitular) {
+		return carteiraRepository.findByTitularNome(nomeTitular);
+	}
+	
+	public void salvar(Carteira carteira) {
+		carteiraRepository.save(carteira);		
+	}
+
+	private InfoOperacaoBancariaDTO montaJson(String saque) {
+		Gson gson = new Gson();
+		return gson.fromJson(saque, InfoOperacaoBancariaDTO.class);
+	}
+
 	private boolean verificaSeCarteirasExistem(TransferenciaDTO transferenciaDTO) {
 		return nonNull(getInfosDaCarteira(transferenciaDTO.getOrigem().getTitular())) 
 				&& nonNull(getInfosDaCarteira(transferenciaDTO.getDestino().getTitular()));
@@ -98,17 +111,4 @@ public class CarteiraService {
 		Gson gson = new Gson();
 		return gson.fromJson(saque, TransferenciaDTO.class);
 	}
-
-	public void pagamento(PagamentoDTO pagamento) {
-		if(nonNull(getInfosDaCarteira(pagamento.getCarteira().getTitular()))) {
-			Carteira carteira = getInfosDaCarteira(pagamento.getCarteira().getTitular());
-			carteira.setSaldo(carteira.getSaldo() - pagamento.getValor());
-			salvar(carteira);
-			pagamento.setTipo(TipoMovimentacaoENUM.PAGAMENTO.getId());
-			movimentacaoFinanceiraService.registrarMovimentacao(pagamento, carteira);
-		}		
-		
-	}
-
-
 }

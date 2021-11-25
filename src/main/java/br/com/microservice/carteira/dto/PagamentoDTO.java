@@ -1,5 +1,6 @@
 package br.com.microservice.carteira.dto;
 
+import static java.util.Objects.nonNull;
 
 public class PagamentoDTO {
 
@@ -32,6 +33,10 @@ public class PagamentoDTO {
 	public void setTipo(String tipo) {
 		this.tipo = tipo;
 	}	
+	
+	public String getNomeTitularCarteira() {
+		return nonNull(carteira.getTitular()) ? carteira.getTitular() : "";
+	}
 	
 }
 
