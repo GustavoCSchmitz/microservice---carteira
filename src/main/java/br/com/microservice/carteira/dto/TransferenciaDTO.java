@@ -1,5 +1,7 @@
 package br.com.microservice.carteira.dto;
 
+import static java.util.Objects.nonNull;
+
 public class TransferenciaDTO {
 
 	private CarteiraDTO origem;
@@ -28,6 +30,14 @@ public class TransferenciaDTO {
 	
 	public void setOrigem(CarteiraDTO origem) {
 		this.origem = origem;
+	}
+	
+	public String getNomeTitularOrigem() {
+		return nonNull(getOrigem().getTitular()) ? getOrigem().getTitular() : "";	
+	}
+	
+	public String getNomeTitularDestino() {
+		return nonNull(getDestino().getTitular()) ? getDestino().getTitular() : "";	
 	}
 }
 

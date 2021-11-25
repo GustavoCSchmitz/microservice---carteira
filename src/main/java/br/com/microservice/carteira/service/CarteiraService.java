@@ -18,21 +18,30 @@ public class CarteiraService {
 
 	@Autowired private CarteiraRepository carteiraRepository;
 	@Autowired private MovimentacaoFinanceiraService movimentacaoFinanceiraService;
+	@Autowired private TransferenciaService transferenciaService;
 	
 	public Carteira getInfosDaCarteira(String nomeTitular) {
 		return carteiraRepository.findByTitularNome(nomeTitular);
 	}
 
-	public void saque(String saque) {
+	public String saque(String saque) {
 		InfoOperacaoBancariaDTO infos = montaJson(saque);
 		if(nonNull(getInfosDaCarteira(infos.getCarteira().getTitular()))) {
-			//utilizar builder nas linhas 29 e 30 usar lombok
 			Carteira carteira = getInfosDaCarteira(infos.getCarteira().getTitular());
-			carteira.setSaldo(carteira.getSaldo() - infos.getValor());
-			salvar(carteira);
-			infos.setTipo(TipoMovimentacaoENUM.SAQUE.getId());
-			movimentacaoFinanceiraService.registrarMovimentacao(infos, carteira);
+			if(verificaSeTemSaldo(carteira.getSaldo(),infos.getValor())) {
+				carteira.setSaldo(carteira.getSaldo() - infos.getValor());
+				salvar(carteira);
+				infos.setTipo(TipoMovimentacaoENUM.SAQUE.getId());
+				movimentacaoFinanceiraService.registrarMovimentacao(infos, carteira);
+				return "Saque no valor de R$"+infos.getValor().toString()+" realizado com sucesso!";
+			}else
+				return "A conta não possui saldo suficiente para completar o saque!";
 		}		
+		return "A conta informada não foi cadastrada!";
+	}
+
+	private boolean verificaSeTemSaldo(Double saldoCarteira, Double valorSaque) {
+		return saldoCarteira- valorSaque >= 0;
 	}
 
 	public void salvar(Carteira carteira) {
@@ -55,23 +64,28 @@ public class CarteiraService {
 		}		
 	}
 
-	public void transferencia(String transferencia) {
+	public String transferencia(String transferencia) {
 		TransferenciaDTO transferenciaDTO = montaJsonTransferencia(transferencia);		
 		if(nonNull(verificaSeCarteirasExistem(transferenciaDTO))) {
 			Carteira carteiraOrigem = getInfosDaCarteira(transferenciaDTO.getOrigem().getTitular());
 			Carteira carteiraDestino = getInfosDaCarteira(transferenciaDTO.getDestino().getTitular());
 			
-			carteiraOrigem.setSaldo(carteiraOrigem.getSaldo() - transferenciaDTO.getValor());
-			carteiraDestino.setSaldo(carteiraDestino.getSaldo() + transferenciaDTO.getValor());
+			if(transferenciaService.verficaSeTransferenciaEhValida(carteiraOrigem.getSaldo(), transferenciaDTO.getValor())) {
+				carteiraOrigem.setSaldo(carteiraOrigem.getSaldo() - transferenciaDTO.getValor());
+				carteiraDestino.setSaldo(carteiraDestino.getSaldo() + transferenciaDTO.getValor());
+				
+				salvar(carteiraOrigem);
+				salvar(carteiraDestino);
+				
+				movimentacaoFinanceiraService.registrarMovimentacaoTransferencia(transferenciaDTO, carteiraOrigem);
+				movimentacaoFinanceiraService.registrarMovimentacaoTransferencia(transferenciaDTO, carteiraDestino);
+				return "Transferência no valor de R$" + transferenciaDTO.getValor() + " de " + transferenciaDTO.getNomeTitularOrigem() +
+				" para " + transferenciaDTO.getNomeTitularDestino() + " realizada com sucesso";
 			
-			salvar(carteiraOrigem);
-			salvar(carteiraDestino);
-			
-			movimentacaoFinanceiraService.registrarMovimentacaoTransferencia(transferenciaDTO, carteiraOrigem);
-			movimentacaoFinanceiraService.registrarMovimentacaoTransferencia(transferenciaDTO, carteiraDestino);
-		}else {
-			//lançar excessão aqui
+			}
+			return "A conta de origem não possui o valor desejado para a transferência";
 		}
+		return "Uma das carteiras informadas não está cadastrada no banco de dados";
 	}
 	
 	private boolean verificaSeCarteirasExistem(TransferenciaDTO transferenciaDTO) {

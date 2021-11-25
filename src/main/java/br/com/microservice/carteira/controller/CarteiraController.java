@@ -47,8 +47,8 @@ public class CarteiraController {
 	@PostMapping("/saque")
 	public ResponseEntity<String> saque(@RequestBody String saque) throws IOException{
 		try {
-			carteiraService.saque(saque);
-			return new ResponseEntity<String>("ok",HttpStatus.OK);
+			String menssagem = carteiraService.saque(saque);
+			return new ResponseEntity<String>(menssagem,HttpStatus.OK);
 		}catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<String>("Ocorreu um erro durante a realização do saque",HttpStatus.INTERNAL_SERVER_ERROR);
@@ -69,8 +69,8 @@ public class CarteiraController {
 	@PostMapping("/transferencia")
 	public ResponseEntity<String> transferencia(@RequestBody String transferencia) throws IOException{
 		try {
-			carteiraService.transferencia(transferencia);
-			return new ResponseEntity<String>("ok",HttpStatus.OK);
+			String menssagem = carteiraService.transferencia(transferencia);
+			return new ResponseEntity<String>(menssagem,HttpStatus.OK);
 		}catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<String>("Ocorreu um erro durante a realização do saque",HttpStatus.INTERNAL_SERVER_ERROR);
